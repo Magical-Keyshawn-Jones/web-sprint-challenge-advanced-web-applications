@@ -23,7 +23,7 @@ const loginUrl = 'http://localhost:9000/api/login'
 //   // window.localStorage.setItem('token', token)
 //   // setMessage(res.data.message)
 // })
-// .catch(err=>console.log('error!', err))
+// .catch(err=>console.log('error!', {err}))
 
 export default function App() {
   // ✨ MVP can be achieved with these states
@@ -51,16 +51,20 @@ export default function App() {
     }
   }
 
-  const login = ({ username, password }) => {
+  const login = (username, password) => {
     // ✨ implement
     // We should flush the message state, turn on the spinner
     // and launch a request to the proper endpoint.
     // On success, we should set the token to local storage in a 'token' key,
     // put the server success message in its proper state, and redirect
     // to the Articles screen. Don't forget to turn off the spinner!
+    const loginInfo = {
+      username: username,
+      password: password
+    }
     setMessage('')
     setSpinnerOn(true)
-    axios.post(loginUrl, { username, password })
+    axios.post(loginUrl, loginInfo)
     .then(res=>{
       const token = res.data.token
       window.localStorage.setItem('token', token)
@@ -69,7 +73,8 @@ export default function App() {
       setSpinnerOn(false)
     })
     .catch(err=>{
-      setMessage(err.response.data.message)
+      console.log({err})
+      setMessage(err.config.message)
       setSpinnerOn(false)
     })
   }
@@ -92,7 +97,7 @@ export default function App() {
       setSpinnerOn(false)
     })
     .catch(err=>{
-      setMessage(err.response.data.message)
+      setMessage(err.config.message)
       setSpinnerOn(false)
     })
   }
@@ -111,17 +116,21 @@ export default function App() {
       setSpinnerOn(false)
     })
     .catch(err=>{
-      setMessage(err.response.data.message)
+      setMessage(err.config.message)
       setSpinnerOn(false)
     })
   }
 
-  const updateArticle = ({ article_id, article }) => {
+  const updateArticle = ( article_id, article) => {
     // ✨ implement
     // You got this!
+    const articleSender = {
+      article_id: article_id,
+      article: article
+    }
     setMessage('')
     setSpinnerOn(true)
-    axiosWithAuth().put(`${articlesUrl}/${article_id}`, article)
+    axiosWithAuth().put(`${articlesUrl}/${articleSender.article_id}`, articleSender.article)
     .then(res=>{
       setArticles(articles.map(art => {
         return art.article_id === article_id ? res.data.article : art
@@ -130,7 +139,7 @@ export default function App() {
       setSpinnerOn(false)
     })
     .catch(err=>{
-      setMessage(err.response.data.message)
+      setMessage(err.config.message)
       setSpinnerOn(false)
     })
   }
@@ -148,13 +157,14 @@ export default function App() {
       setSpinnerOn(false)
     })
     .catch(err=>{
-      setMessage(err.response.data.message)
+      setMessage(err.config.message)
       setSpinnerOn(false)
     })
   }
 
   return (
     // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
+    // When passing in props Do not Invoke them! they just need the name of function
     <React.StrictMode>
       <Spinner on={spinnerOn}/>
       <Message message={message}/>
@@ -166,19 +176,20 @@ export default function App() {
           <NavLink id="articlesScreen" to="/articles">Articles</NavLink>
         </nav>
         <Routes>
-          <Route path="/" element={<LoginForm login={login()} />} />
+          <Route path="/" element={<LoginForm login={login}/>} />
           <Route path="articles" element={
             <>
               <ArticleForm
-                postArticle={postArticle()}
-                updateArticle={updateArticle()}
-                setCurrentArticleId={setCurrentArticleId()}
+                postArticle={postArticle}
+                updateArticle={updateArticle}
+                setCurrentArticleId={setCurrentArticleId}
+                // I think I need to give this an object
                 currentArticle={null}
               />
               <Articles
                 articles={articles}
-                getArticles={getArticles()}
-                deleteArticle={deleteArticle()}
+                getArticles={getArticles}
+                deleteArticle={deleteArticle}
                 setCurrentArticleId={setCurrentArticleId}
                 currentArticle={currentArticleId} 
               />
