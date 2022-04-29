@@ -68,7 +68,10 @@ export default function App() {
       navigate('/articles')
       setSpinnerOn(false)
     })
-    .catch(err=>console.log('error!', err))
+    .catch(err=>{
+      setMessage(err.response.data.message)
+      setSpinnerOn(false)
+    })
   }
 
   const getArticles = () => {
@@ -99,6 +102,18 @@ export default function App() {
     // The flow is very similar to the `getArticles` function.
     // You'll know what to do! Use log statements or breakpoints
     // to inspect the response from the server.
+    setMessage('')
+    setSpinnerOn(true)
+    axiosWithAuth().post(articlesUrl, article)
+    .then(res=>{
+      setArticles([...articles, res.data.article])
+      setMessage(res.data.message)
+      setSpinnerOn(false)
+    })
+    .catch(err=>{
+      setMessage(err.response.data.message)
+      setSpinnerOn(false)
+    })
   }
 
   const updateArticle = ({ article_id, article }) => {
