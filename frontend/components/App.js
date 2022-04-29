@@ -34,8 +34,8 @@ export default function App() {
 
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
-  const redirectToLogin = () => { /* ✨ implement */ }
-  const redirectToArticles = () => { /* ✨ implement */ }
+  const redirectToLogin = () => { navigate('/')}
+  const redirectToArticles = () => {navigate('/articles') }
 
   const logout = () => {
     // ✨ implement
@@ -47,7 +47,7 @@ export default function App() {
 
     if (key === null){navigate('/')} else {
       setMessage('Goodbye!')
-      navigate('/')
+      redirectToLogin()
     }
   }
 
@@ -65,7 +65,7 @@ export default function App() {
       const token = res.data.token
       window.localStorage.setItem('token', token)
       setMessage(res.data.message)
-      navigate('/articles')
+      redirectToArticles()
       setSpinnerOn(false)
     })
     .catch(err=>{
@@ -119,10 +119,38 @@ export default function App() {
   const updateArticle = ({ article_id, article }) => {
     // ✨ implement
     // You got this!
+    setMessage('')
+    setSpinnerOn(true)
+    axiosWithAuth().put(`${articlesUrl}/${article_id}`, article)
+    .then(res=>{
+      setArticles(articles.map(art => {
+        return art.article_id === article_id ? res.data.article : art
+      }))
+      setMessage(res.data.message)
+      setSpinnerOn(false)
+    })
+    .catch(err=>{
+      setMessage(err.response.data.message)
+      setSpinnerOn(false)
+    })
   }
 
   const deleteArticle = article_id => {
     // ✨ implement
+    setMessage('')
+    setSpinnerOn(true)
+    axiosWithAuth().delete(`${articlesUrl}/${article_id}`)
+    .then(res=>{
+      setArticles(articles.filter(art=>{
+        return art.article_id !== article_id
+      }))
+      setMessage(res.data.message)
+      setSpinnerOn(false)
+    })
+    .catch(err=>{
+      setMessage(err.response.data.message)
+      setSpinnerOn(false)
+    })
   }
 
   return (
