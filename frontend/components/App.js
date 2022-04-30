@@ -1,6 +1,6 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, createContext } from 'react'
 import axios from 'axios'
-import { NavLink, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
+import { NavLink, Routes, Route, useNavigate } from 'react-router-dom'
 import Articles from './Articles'
 import LoginForm from './LoginForm'
 import Message from './Message'
@@ -10,28 +10,6 @@ import axiosWithAuth from '../axios'
 
 const articlesUrl = 'http://localhost:9000/api/articles'
 const loginUrl = 'http://localhost:9000/api/login'
-const help = 'I cant code '
-
-const boolean = window.localStorage.setItem('boolean', help)
-const aId = window.localStorage.setItem('aId', '')
-const aText = window.localStorage.setItem('aText', '')
-const aTitle = window.localStorage.setItem('aTitle', '')
-const aTopic = window.localStorage.setItem('aTopic', '')
-const initialValues = { title: aTitle, text: aText, topic: aTopic}
-
-// const loginSender = { 
-//   username: 'IdahBest',
-//   password: 'Idkthisthing'
-// }
-
-// axios.post(loginUrl, loginSender)
-// .then(res=>{
-//   console.log(res)
-//   // const token = res.data.token
-//   // window.localStorage.setItem('token', token)
-//   // setMessage(res.data.message)
-// })
-// .catch(err=>console.log('error!', {err}))
 
 
 export default function App() {
@@ -40,23 +18,14 @@ export default function App() {
   const [articles, setArticles] = useState([])
   const [currentArticleId, setCurrentArticleId] = useState('something')
   const [spinnerOn, setSpinnerOn] = useState(false)
-  const location = useLocation()
-  location.state = {bro: articles, form: { title: '', text: '', topic: '' }}
-  const form = location.state.form
-  // console.log(form)
-  // useEffect(()=>{
-  //   location.state = {bro: articles, form: { title: '', text: '', topic: '' }}
-  // },[])
+  const NewArticle = createContext({Name: 'not Me'})
+  
+  console.log(NewArticle)
 
-  // function somethingNew(words){
-  //   setCurrentArticleId(words)
-  //   return currentArticleId
-  // }
-// const state = currentArticleId
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
   const redirectToLogin = () => { navigate('/')}
-  const redirectToArticles = () => {navigate('/articles',{ state: {bro: articles, form: { title: '', text: '', topic: '' }}}) }
+  const redirectToArticles = () => {navigate('/articles')}
 
   const logout = () => {
     // ✨ implement
@@ -146,10 +115,7 @@ export default function App() {
   const updateArticle = ( article) => {
     // ✨ implement
     // You got this!
-    // const articleSender = {
-    //   article_id: article_id,
-    //   article: article
-    // }
+
     const { article_id, ...changes } = article
 
     setMessage('')
@@ -159,10 +125,9 @@ export default function App() {
       setArticles(articles.map(art => {
         return art.article_id === article_id ? res.data.article : art
       }))
-      // console.log(res)
       setMessage(res.data.message)
-      setCurrentArticleId(null)
       setSpinnerOn(false)
+      setCurrentArticleId(null)
     })
     .catch(err=>{
       setMessage(err.config.message)
@@ -176,11 +141,11 @@ export default function App() {
     setSpinnerOn(true)
     axiosWithAuth().delete(`${articlesUrl}/${article_id}`)
     .then(res=>{
+      setSpinnerOn(false)
+      setMessage(res.data.message)
       setArticles(articles.filter(art=>{
         return art.article_id !== article_id
       }))
-      setMessage(res.data.message)
-      setSpinnerOn(false)
     })
     .catch(err=>{
       setMessage(err.config.message)
@@ -188,20 +153,11 @@ export default function App() {
     })
   }
 
-  // const onSubmit = article => {
-  //   if (currentArticleId) {
-  //     updateArticle(article)
-  //   } else {
-  //     postArticle(article)
-  //   }
-  // }
-
-  console.log(currentArticleId)
-
   return (
     // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
     // When passing in props Do not Invoke them! they just need the name of function
     <React.StrictMode>
+      {/* <NewArticle.Provider value={articles}> */}
       <Spinner on={spinnerOn}/>
       <Message message={message}/>
       <button id="logout" onClick={()=>{logout()}}>Logout from app</button>
@@ -224,19 +180,22 @@ export default function App() {
                 currentArticle={null}
                 number={currentArticleId}
                 bestArticles={articles.find(art => art.article_id === currentArticleId)}
-              />
+                />
+                {/* <NewArticle.Provider value={articles}> */}
               <Articles
                 articles={articles}
                 getArticles={getArticles}
                 deleteArticle={deleteArticle}
                 setCurrentArticleId={setCurrentArticleId}
                 currentArticle={currentArticleId}
-              />
+                />
+                {/* </NewArticle.Provider> */}
             </>
           } />
         </Routes>
         <footer>Bloom Institute of Technology 2022</footer>
       </div>
+      {/* </NewArticle.Provider> */}
     </React.StrictMode>
   )
 }

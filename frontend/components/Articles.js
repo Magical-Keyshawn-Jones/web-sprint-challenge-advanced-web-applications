@@ -1,43 +1,29 @@
 import React, { useEffect } from 'react'
-import { Navigate, useLocation, useNavigate } from 'react-router-dom'
+import { Navigate } from 'react-router-dom'
 import PT from 'prop-types'
 // import { BestArticles } from './App'
 
 export default function Articles(props) {
   // ✨ where are my props? Destructure them here
-  const location = useLocation()
   const { 
-    // location,
     articles,
     getArticles,
     deleteArticle,
     setCurrentArticleId,
     currentArticleId,
   } = props
-    location.state = {bro: articles, form: { title: '', text: '', topic: '' }}
   // ✨ implement conditional logic: if no token exists
   // we should render a Navigate to login screen (React Router v.6)
+
   const key = window.localStorage.getItem('token')
-  // const iKnow = location.state.disabling
-// console.log( location )
   
 
   useEffect(() => {
     // ✨ grab the articles here, on first render only
     getArticles()
-    // location.state = {bro: articles, disabling: false, form: { title: '', text: '', topic: '' }}
-    // useNavigate('/articles', { state: {nothing: 'not here'}})
-    // console.log(location) 
   },[])
 
-  // location.state = { no: 'no kewl bro'}
-  // console.log(location)
-
   function editHandler(index){
-    // const editArticle = location.state.bro[index]
-    // location.state = {bro: articles, disabling: Math.random()*1000, form: editArticle}
-    // console.log(location.state.form)
-
     setCurrentArticleId(index)
   }
   
@@ -50,7 +36,7 @@ export default function Articles(props) {
       {
         !articles.length
         ? 'No articles yet'
-        : articles.map((art, index) => {
+        : articles.map(art => {
             return (
               <div className="article" key={art.article_id}>
                 <div>
