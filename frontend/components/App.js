@@ -1,6 +1,6 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import axios from 'axios'
-import { NavLink, Routes, Route, useNavigate } from 'react-router-dom'
+import { NavLink, Routes, Route, useNavigate, useLocation } from 'react-router-dom'
 import Articles from './Articles'
 import LoginForm from './LoginForm'
 import Message from './Message'
@@ -10,6 +10,14 @@ import axiosWithAuth from '../axios'
 
 const articlesUrl = 'http://localhost:9000/api/articles'
 const loginUrl = 'http://localhost:9000/api/login'
+const help = 'I cant code '
+
+const boolean = window.localStorage.setItem('boolean', help)
+const aId = window.localStorage.setItem('aId', '')
+const aText = window.localStorage.setItem('aText', '')
+const aTitle = window.localStorage.setItem('aTitle', '')
+const aTopic = window.localStorage.setItem('aTopic', '')
+const initialValues = { title: aTitle, text: aText, topic: aTopic}
 
 // const loginSender = { 
 //   username: 'IdahBest',
@@ -25,17 +33,30 @@ const loginUrl = 'http://localhost:9000/api/login'
 // })
 // .catch(err=>console.log('error!', {err}))
 
+
 export default function App() {
   // ✨ MVP can be achieved with these states
   const [message, setMessage] = useState('')
   const [articles, setArticles] = useState([])
-  const [currentArticleId, setCurrentArticleId] = useState()
+  const [currentArticleId, setCurrentArticleId] = useState('something')
   const [spinnerOn, setSpinnerOn] = useState(false)
+  const location = useLocation()
+  location.state = {bro: articles, form: { title: '', text: '', topic: '' }}
+  const form = location.state.form
+  // console.log(form)
+  // useEffect(()=>{
+  //   location.state = {bro: articles, form: { title: '', text: '', topic: '' }}
+  // },[])
 
+  // function somethingNew(words){
+  //   setCurrentArticleId(words)
+  //   return currentArticleId
+  // }
+// const state = currentArticleId
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
   const redirectToLogin = () => { navigate('/')}
-  const redirectToArticles = () => {navigate('/articles') }
+  const redirectToArticles = () => {navigate('/articles',{ state: {bro: articles, form: { title: '', text: '', topic: '' }}}) }
 
   const logout = () => {
     // ✨ implement
@@ -44,6 +65,7 @@ export default function App() {
     // In any case, we should redirect the browser back to the login screen,
     // using the helper above.
     const key = window.localStorage.getItem('token')
+    window.localStorage.removeItem('token', key)
 
     if (key === null){navigate('/')} else {
       setMessage('Goodbye!')
@@ -121,21 +143,25 @@ export default function App() {
     })
   }
 
-  const updateArticle = ( article_id, article) => {
+  const updateArticle = ( article) => {
     // ✨ implement
     // You got this!
-    const articleSender = {
-      article_id: article_id,
-      article: article
-    }
+    // const articleSender = {
+    //   article_id: article_id,
+    //   article: article
+    // }
+    const { article_id, ...changes } = article
+
     setMessage('')
     setSpinnerOn(true)
-    axiosWithAuth().put(`${articlesUrl}/${articleSender.article_id}`, articleSender.article)
+    axiosWithAuth().put(`${articlesUrl}/${article_id}`, changes)
     .then(res=>{
       setArticles(articles.map(art => {
         return art.article_id === article_id ? res.data.article : art
       }))
+      // console.log(res)
       setMessage(res.data.message)
+      setCurrentArticleId(null)
       setSpinnerOn(false)
     })
     .catch(err=>{
@@ -162,13 +188,23 @@ export default function App() {
     })
   }
 
+  // const onSubmit = article => {
+  //   if (currentArticleId) {
+  //     updateArticle(article)
+  //   } else {
+  //     postArticle(article)
+  //   }
+  // }
+
+  console.log(currentArticleId)
+
   return (
     // ✨ fix the JSX: `Spinner`, `Message`, `LoginForm`, `ArticleForm` and `Articles` expect props ❗
     // When passing in props Do not Invoke them! they just need the name of function
     <React.StrictMode>
       <Spinner on={spinnerOn}/>
       <Message message={message}/>
-      <button id="logout" onClick={logout}>Logout from app</button>
+      <button id="logout" onClick={()=>{logout()}}>Logout from app</button>
       <div id="wrapper" style={{ opacity: spinnerOn ? "0.25" : "1" }}> {/* <-- do not change this line */}
         <h1>Advanced Web Applications</h1>
         <nav>
@@ -183,15 +219,18 @@ export default function App() {
                 postArticle={postArticle}
                 updateArticle={updateArticle}
                 setCurrentArticleId={setCurrentArticleId}
+                article={articles}
                 // I think I need to give this an object
                 currentArticle={null}
+                number={currentArticleId}
+                bestArticles={articles.find(art => art.article_id === currentArticleId)}
               />
               <Articles
                 articles={articles}
                 getArticles={getArticles}
                 deleteArticle={deleteArticle}
                 setCurrentArticleId={setCurrentArticleId}
-                currentArticle={currentArticleId} 
+                currentArticle={currentArticleId}
               />
             </>
           } />

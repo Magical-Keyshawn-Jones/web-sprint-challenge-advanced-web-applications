@@ -64,8 +64,8 @@ The endpoints needed for this project are the following:
 In order to complete this project, you must fix the following modules:
 
 <!-- - [frontend/axios/index.js](frontend/axios/index.js) -->
-<!-- - [frontend/components/App.js](frontend/components/App.js) --> fix currentArticles thing for the form
-- [frontend/components/LoginForm.js](frontend/components/LoginForm.js)
+<!-- - [frontend/components/App.js](frontend/components/App.js) --> 
+<!-- - [frontend/components/LoginForm.js](frontend/components/LoginForm.js) -->
 - [frontend/components/Articles.js](frontend/components/Articles.js)
 - [frontend/components/ArticleForm.js](frontend/components/ArticleForm.js)
 
