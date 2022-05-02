@@ -15,7 +15,10 @@ export default function Articles(props) {
   // ✨ implement conditional logic: if no token exists
   // we should render a Navigate to login screen (React Router v.6)
 
-  const key = window.localStorage.getItem('token')
+  // const key = window.localStorage.getItem('token')
+  if (!window.localStorage.getItem('token')) {
+    return <Navigate to="/" />
+  }
   
 
   useEffect(() => {
@@ -31,7 +34,7 @@ export default function Articles(props) {
     // ✨ fix the JSX: replace `Function.prototype` with actual functions
     // and use the articles prop to generate articles
     <div className="articles">
-      {key === null ? <Navigate to='/'/> : null}
+      {/* {key === null ? <Navigate to='/'/> : null} */}
       <h2>Articles</h2>
       {
         !articles.length
