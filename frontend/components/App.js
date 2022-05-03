@@ -18,10 +18,8 @@ export default function App() {
   const [articles, setArticles] = useState([])
   const [currentArticleId, setCurrentArticleId] = useState('something')
   const [spinnerOn, setSpinnerOn] = useState(false)
-  const NewArticle = createContext({Name: 'not Me'})
+  // const NewArticle = createContext({Name: 'not Me'})
   
-  console.log(NewArticle)
-
   // ✨ Research `useNavigate` in React Router v.6
   const navigate = useNavigate()
   const redirectToLogin = () => { navigate('/')}
@@ -175,11 +173,9 @@ export default function App() {
                 postArticle={postArticle}
                 updateArticle={updateArticle}
                 setCurrentArticleId={setCurrentArticleId}
-                article={articles}
-                // I think I need to give this an object
-                currentArticle={null}
+                currentArticle={articles.find(art => art.article_id === currentArticleId)}
                 number={currentArticleId}
-                bestArticles={articles.find(art => art.article_id === currentArticleId)}
+                // bestArticles={articles.find(art => art.article_id === currentArticleId)}
                 />
                 {/* <NewArticle.Provider value={articles}> */}
               <Articles
