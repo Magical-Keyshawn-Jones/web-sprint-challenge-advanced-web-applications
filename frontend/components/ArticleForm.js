@@ -23,6 +23,7 @@ export default function ArticleForm(props) {
     // if it's truthy, we should set its title, text and topic into the corresponding
     // values of the form. If it's not, we should reset the form back to initial values.
     setValues(currentArticle || initialFormValues)
+    // setValues(initialFormValues || currentArticle)
     
   },[currentArticle])
 
@@ -31,16 +32,17 @@ export default function ArticleForm(props) {
     setValues({ ...values, [id]: value })
   }
 
+  // console.log(currentArticle)
   const onSubmit = evt => {
     evt.preventDefault()
     // ✨ implement
     // We must submit a new post or update an existing one,
     // depending on the truthyness of the `currentArticle` prop.
 
-      if (number) {
-        updateArticle(values)
+      if (currentArticle === undefined) {
+        console.log(postArticle(values))
       } else {
-        postArticle(values)
+        console.log(updateArticle(values))
       }
 
     setValues(initialFormValues)
